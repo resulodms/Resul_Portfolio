@@ -1,4 +1,4 @@
-﻿namespace Resul_Portfolio.ViewComponents.DefaulViewtComponents
+﻿namespace Resul_Portfolio.ViewComponents.DefaultViewComponents
 {
     public class _DefaultExperienceComponentPartial
     {
