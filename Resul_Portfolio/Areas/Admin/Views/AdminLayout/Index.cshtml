@@ -399,18 +399,10 @@
                 padding-right: 16px;
             }
         }
-    </style>({
-        icon: 'error',
-        title: 'Hata',
-        text: @Html.Raw(Json.Serialize(TempData["Error"]))
-    });
+    </style>
+   
     <link href="~/css/admin-forms.css" rel="stylesheet" />
-    @if(TempData["Error"]!=null)
-    {
-        <script>
-            Swal.fire
-        </script>
-    }
+   
     @await RenderSectionAsync("Styles", required: false)
 </head>
 
@@ -582,6 +574,16 @@
         });
     </script>
         
+    }
+    @if (TempData["Error"] != null)
+    {
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Hata',
+                text: @Html.Raw(Json.Serialize(TempData["Error"]))
+            });
+        </script>
     }
     @await RenderSectionAsync("Scripts", required: false)
 </body>
