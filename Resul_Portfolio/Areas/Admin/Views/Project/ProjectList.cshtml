@@ -1,0 +1,136 @@
+﻿@model List<Project>
+@{
+    ViewData["Title"] = "Projeler";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+<div class="list-card">
+    <div class="list-card-header">
+        <div class="d-flex align-items-center gap-3">
+            <div class="list-card-icon"><i class="bi bi-grid"></i></div>
+            <div>
+                <h5 class="mb-0 fw-bold">Projeler</h5>
+                <small class="text-secondary">
+                    Toplam @Model.Count proje ·
+                    <span class="text-success fw-semibold">@Model.Count(x => x.IsActive) aktif</span> ·
+                    @Model.Select(x => x.CategoryId).Distinct().Count() kategoride
+                </small>
+            </div>
+        </div>
+
+        <a asp-area="Admin" asp-controller="Project" asp-action="CreateProject" class="btn btn-add">
+            <i class="bi bi-plus-lg me-1"></i> Yeni Proje
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <div class="empty-icon"><i class="bi bi-grid"></i></div>
+            <h6 class="fw-bold mb-1">Henüz proje eklenmedi</h6>
+            <p class="text-secondary small mb-3">Eklediğiniz aktif projeler portfolyoda kategori filtreleriyle birlikte görünür.</p>
+            <a asp-area="Admin" asp-controller="Project" asp-action="CreateProject" class="btn btn-add">
+                <i class="bi bi-plus-lg me-1"></i> İlk Projeyi Ekle
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table list-table">
+                <thead>
+                    <tr>
+                        <th>Proje</th>
+                        <th>Kategori</th>
+                        <th>Bağlantılar</th>
+                        <th>Durum</th>
+                        <th class="text-end">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="@item.CoverImageUrl" alt="@item.Title" class="thumb-preview" style="width: 64px; height: 44px;" />
+                                    <div>
+                                        <div class="fw-semibold">@item.Title</div>
+                                        <small class="text-secondary">@item.Tags</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                @* Include sayesinde kategori adı geliyor *@
+                                <span class="badge rounded-pill text-bg-light border">@item.Category?.CategoryName</span>
+                            </td>
+                            <td class="text-nowrap">
+                                @if (!string.IsNullOrEmpty(item.GithubUrl))
+                                {
+                                    <a href="@item.GithubUrl" target="_blank" rel="noopener noreferrer" class="btn-icon edit" title="GitHub"><i class="bi bi-github"></i></a>
+                                }
+                                @if (!string.IsNullOrEmpty(item.LiveDemoUrl))
+                                {
+                                    <a href="@item.LiveDemoUrl" target="_blank" rel="noopener noreferrer" class="btn-icon edit" title="Canlı Demo"><i class="bi bi-box-arrow-up-right"></i></a>
+                                }
+                                @if (string.IsNullOrEmpty(item.GithubUrl) && string.IsNullOrEmpty(item.LiveDemoUrl))
+                                {
+                                    <span class="text-secondary small">-</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.IsActive)
+                                {
+                                    <span class="status-pill"><i class="bi bi-check-circle-fill"></i> Aktif</span>
+                                }
+                                else
+                                {
+                                    <span class="status-pill" style="background:#F1F2F6;color:#6B7489;border-color:#DFE2EA;"><i class="bi bi-eye-slash-fill"></i> Pasif</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-2">
+                                    <a asp-area="Admin" asp-controller="Project" asp-action="UpdateProject" asp-route-id="@item.ProjectId"
+                                       class="btn-icon edit" title="Güncelle">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <button type="button" class="btn-icon delete btn-delete"
+                                            data-id="@item.ProjectId" data-name="@item.Title" title="Sil">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll(".btn-delete").forEach(btn => {
+            btn.addEventListener("click", function () {
+                const id = this.dataset.id;
+                const name = this.dataset.name;
+
+                Swal.fire({
+                    icon: "warning",
+                    title: "Emin misiniz?",
+                    text: "\"" + name + "\" projesi ve kapak görseli kalıcı olarak silinecek.",
+                    showCancelButton: true,
+                    confirmButtonText: "Evet, sil",
+                    cancelButtonText: "Vazgeç",
+                    confirmButtonColor: "#D9534F",
+                    cancelButtonColor: "#8490A5",
+                    reverseButtons: true
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        window.location.href = "/Admin/Project/DeleteProject/" + id;
+                    }
+                });
+            });
+        });
+    </script>
+}

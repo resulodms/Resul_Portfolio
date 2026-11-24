@@ -1,33 +1,145 @@
 ﻿@model List<Message>
 @{
-    ViewData["Title"] = "MessageList";
+    ViewData["Title"] = "Mesajlar";
     Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
 }
 
-<div class="container">
-    <br />
-    <table class="table table-bordered">
-        <tr>
-            <th>#</th>
-            <th>Gönderen</th>
-            <th>Email</th>
-            <th>Konu</th>
-            <th>Tarih</th>
-            <th>Mesajı Aç</th>
-        </tr>
+<div class="list-card">
+    <div class="list-card-header">
+        <div class="d-flex align-items-center gap-3">
+            <div class="list-card-icon"><i class="bi bi-envelope"></i></div>
+            <div>
+                <h5 class="mb-0 fw-bold">Gelen Mesajlar</h5>
+                <small class="text-secondary">
+                    Toplam @Model.Count mesaj ·
+                    <span class="fw-semibold text-warning">@ViewBag.UnreadCount okunmamış</span>
+                </small>
+            </div>
+        </div>
 
-        @foreach(var item in Model)
-        {
-            <tr>
-                <td>@item.MessageId</td>
-                <td>@item.NameSurname</td>
-                <td>@item.Email</td>
-                <td>@item.Subject</td>
-                <td>@item.SendDate.ToString("dd MMMM yyyy")</td>
-                <td><a href="/Admin/Message/UpdateMessage/@item.MessageId" class="btn btn-primary">Mesajı Güncelle</a></td>
-                <td><a href="/Admin/Message/DeleteMessage/@item.MessageId" class="btn btn-danger">Mesajı Şil</a></td>
-            </tr>
-        }
-    </table>
+        <!-- Arama -->
+        <form method="get" asp-action="MessageList" class="d-flex gap-2">
+            <input type="search" name="search" value="@ViewBag.Search" class="form-control" placeholder="Ad veya konu ara..." />
+            <select name="sort" class="form-select" style="width:auto;" onchange="this.form.submit()">
+                <option value="desc" selected="@(ViewBag.Sort != "asc")">En yeni</option>
+                <option value="asc" selected="@(ViewBag.Sort == "asc")">En eski</option>
+            </select>
+            <button type="submit" class="btn btn-add"><i class="bi bi-search"></i></button>
+        </form>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <div class="empty-icon"><i class="bi bi-inbox"></i></div>
+            <h6 class="fw-bold mb-1">Mesaj bulunamadı</h6>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table list-table">
+                <thead>
+                    <tr>
+                        <th>Gönderen</th>
+                        <th>Konu</th>
+                        <th>Tarih</th>
+                        <th>Durum</th>
+                        <th class="text-end">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr class="@(item.IsRead ? "" : "fw-semibold")">
+                            <td>
+                                @item.NameSurname<br />
+                                <small class="text-secondary fw-normal">@item.Email</small>
+                            </td>
+                            <td>@item.Subject</td>
+                            <td class="text-secondary fw-normal">@item.SendDate.ToString("dd.MM.yyyy HH:mm")</td>
+                            <td>
+                                @if (item.IsRead)
+                                {
+                                    <span class="badge bg-success">Okundu</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Okunmadı</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <!-- Detay butonu: Modal'ı açar -->
+                                <button type="button" class="btn-icon edit" title="Görüntüle"
+                                        data-bs-toggle="modal" data-bs-target="#msg-@item.MessageId">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button type="button" class="btn-icon delete" title="Sil"
+                                        onclick="deleteMessage(@item.MessageId)">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Her mesajın kendi Modal'ı -->
+                        <div class="modal fade" id="msg-@item.MessageId" tabindex="-1">
+                            <div class="modal-dialog modal-lg modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">@item.Subject</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p class="mb-1"><strong>Gönderen:</strong> @item.NameSurname (@item.Email)</p>
+                                        <p class="text-secondary small">@item.SendDate.ToString("dd.MM.yyyy HH:mm")</p>
+                                        <hr />
+                                        <p style="white-space: pre-line;">@item.MessageDetail</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        @if (!item.IsRead)
+                                        {
+                                            <a asp-action="MarkAsRead" asp-route-id="@item.MessageId" class="btn btn-success">
+                                                <i class="bi bi-check2"></i> Okundu olarak işaretle
+                                            </a>
+                                        }
+                                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=@item.Email&su=@Uri.EscapeDataString("Re: " + item.Subject)"
+                                           target="_blank" rel="noopener noreferrer" class="btn btn-accent">
+                                            <i class="bi bi-reply"></i> Gmail ile Yanıtla
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
 </div>
 
+@section Scripts {
+    <script>
+                document.addEventListener("DOMContentLoaded", function () {
+            const openId = new URLSearchParams(window.location.search).get("open");
+            if (openId) {
+                const modalEl = document.getElementById("msg-" + openId);
+                if (modalEl) new bootstrap.Modal(modalEl).show();
+            }
+        });
+        function deleteMessage(id) {
+            Swal.fire({
+                icon: "warning",
+                title: "Emin misiniz?",
+                text: "Bu mesaj kalıcı olarak silinecek.",
+                showCancelButton: true,
+                confirmButtonText: "Evet, sil",
+                cancelButtonText: "Vazgeç",
+                confirmButtonColor: "#D9534F"
+            }).then(result => {
+                if (result.isConfirmed) {
+                    window.location.href = "/Admin/Message/DeleteMessage/" + id;
+                }
+            });
+        }
+    </script>
+}

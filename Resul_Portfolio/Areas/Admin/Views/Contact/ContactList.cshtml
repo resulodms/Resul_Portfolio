@@ -1,0 +1,114 @@
+﻿@model List<Contact>
+@{
+    ViewData["Title"] = "Site Ayarları";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+
+    var contact = Model.FirstOrDefault();
+}
+
+@* Stiller wwwroot/css/admin-forms.css dosyasından gelir.
+   Site Ayarları tek kayıtlık olduğu için tablo yerine özet kart gösterilir; silme işlemi yoktur. *@
+
+<div class="list-card">
+    <!-- Başlık -->
+    <div class="list-card-header">
+        <div class="d-flex align-items-center gap-3">
+            <div class="list-card-icon"><i class="bi bi-gear"></i></div>
+            <div>
+                <h5 class="mb-0 fw-bold">Site Ayarları</h5>
+                <small class="text-secondary">İletişim bilgileri ve sosyal bağlantılar: Hero, İletişim ve Footer alanlarında kullanılır.</small>
+            </div>
+        </div>
+
+        @if (contact != null)
+        {
+            <a asp-area="Admin" asp-controller="Contact" asp-action="UpdateContact" asp-route-id="@contact.ContactId" class="btn btn-add">
+                <i class="bi bi-pencil-square me-1"></i> Ayarları Düzenle
+            </a>
+        }
+    </div>
+
+    @if (contact == null)
+    {
+        <!-- Boş durum -->
+        <div class="empty-state">
+            <div class="empty-icon"><i class="bi bi-gear"></i></div>
+            <h6 class="fw-bold mb-1">Site ayarları henüz oluşturulmadı</h6>
+            <p class="text-secondary small mb-3">Ayarlar oluşturulana kadar sosyal bağlantılar ve İletişim bölümü portfolyoda görünmez.</p>
+            <a asp-area="Admin" asp-controller="Contact" asp-action="CreateContact" class="btn btn-add">
+                <i class="bi bi-plus-lg me-1"></i> Ayarları Oluştur
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="p-4">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="text-secondary small fw-semibold mb-1"><i class="bi bi-envelope me-1"></i> E-posta</div>
+                    <a href="mailto:@contact.Email" class="text-decoration-none fw-semibold">@contact.Email</a>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-secondary small fw-semibold mb-1"><i class="bi bi-geo-alt me-1"></i> Konum</div>
+                    <div class="fw-semibold">@contact.Location</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-secondary small fw-semibold mb-1"><i class="bi bi-linkedin me-1"></i> LinkedIn</div>
+                    <a href="@contact.Linkedin" target="_blank" rel="noopener noreferrer" class="text-decoration-none text-break">@Uri.UnescapeDataString(contact.Linkedin)</a>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-secondary small fw-semibold mb-1"><i class="bi bi-github me-1"></i> GitHub</div>
+                    <a href="@contact.Github" target="_blank" rel="noopener noreferrer" class="text-decoration-none text-break">@contact.Github</a>
+                </div>
+                <div class="col-12">
+                    <div class="text-secondary small fw-semibold mb-1"><i class="bi bi-chat-left-text me-1"></i> İletişim Açıklaması</div>
+                    <div>@contact.Description</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-secondary small fw-semibold mb-1"><i class="bi bi-clock-history me-1"></i> Alt Bilgi Notu</div>
+                    <div>@contact.SubDescription</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-secondary small fw-semibold mb-1"><i class="bi bi-file-earmark-pdf me-1"></i> CV Dosyası</div>
+                    @if (string.IsNullOrEmpty(contact.CvFilePath))
+                    {
+                        <span class="text-secondary">Henüz yüklenmedi</span>
+                    }
+                    else
+                    {
+                        <span class="status-pill"><i class="bi bi-check-circle-fill"></i> Yüklü · @contact.CvDownloadCount indirme</span>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+@if (contact != null)
+{
+    <div class="list-card mt-4">
+        <div class="list-card-header">
+            <div class="d-flex align-items-center gap-3">
+                <div class="list-card-icon"><i class="bi bi-file-earmark-pdf"></i></div>
+                <div>
+                    <h5 class="mb-0 fw-bold">CV Dosyası</h5>
+                    <small class="text-secondary">Portfolyodaki "CV İndir" butonu bu dosyayı indirir. Sadece PDF, en fazla 5 MB.</small>
+                </div>
+            </div>
+            @if (!string.IsNullOrEmpty(contact.CvFilePath))
+            {
+                <a href="@contact.CvFilePath" target="_blank" class="btn btn-soft">
+                    <i class="bi bi-eye me-1"></i> Mevcut CV'yi Görüntüle
+                </a>
+            }
+        </div>
+
+        <div class="p-4">
+            <form asp-action="UploadCv" method="post" enctype="multipart/form-data" class="d-flex gap-2 flex-wrap">
+                <input type="file" name="cvFile" accept=".pdf,application/pdf" class="form-control" style="max-width: 420px;" />
+                <button type="submit" class="btn btn-add">
+                    <i class="bi bi-upload me-1"></i> @(string.IsNullOrEmpty(contact.CvFilePath) ? "CV Yükle" : "CV'yi Değiştir")
+                </button>
+            </form>
+        </div>
+    </div>
+}

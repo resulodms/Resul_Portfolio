@@ -1,31 +1,128 @@
 ﻿@model Experience
-
 @{
-    ViewData["Title"] = "CreateExperience";
+    ViewData["Title"] = "Deneyim Ekle";
     Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+
+    var workTypes = new List<string> { "Tam Zamanlı", "Yarı Zamanlı", "Staj", "Freelance", "Uzaktan", "Hibrit" };
 }
-<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
-<form method="post">
-<div class="container">
-    <br />
-    <label>Başlık</label>
-    <input type="text" asp-for="Title"class="form-control" />
-    <br />
-    <label>Şirket Adı</label>
-    <input type="text" asp-for="CompanyName" class="form-control" />
-    <br />
-    <label>Açıklama</label>
-    <input type="text" asp-for="Description" class="form-control" />
-    <br />
-    <label>Alt Başlık</label>
-    <input type="text" asp-for="SideTitle" class="form-control" />
-    <br />
-    <label>Çalışma Zamanı</label>
-    <input type="text" asp-for="Duration" class="form-control" />
-    <br />
-    <label>Çalışma Türü</label>
-    <input type="text" asp-for="WorkType" class="form-control" />
-    <br />
-    <button class="btn btn-info">Deneyimi Kaydet</button>
+
+@* Form stilleri wwwroot/css/admin-forms.css dosyasından gelir *@
+
+<div class="form-card">
+    <form asp-area="Admin" asp-controller="Experience" asp-action="CreateExperience" method="post">
+
+        <div class="form-card-header">
+            <div class="form-card-icon"><i class="bi bi-briefcase"></i></div>
+            <div>
+                <h5 class="mb-0 fw-bold">Yeni Deneyim Ekle</h5>
+                <small class="text-secondary">Portfolyoda görünecek yeni bir iş deneyimi ekleyin.</small>
+            </div>
+        </div>
+
+        <div class="form-card-body">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+
+            <div class="row g-4">
+                <!-- Pozisyon -->
+                <div class="col-md-6">
+                    <label asp-for="Title" class="form-label">Pozisyon / Ünvan <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-person-badge"></i>
+                        <input asp-for="Title" class="form-control" placeholder="Örn: Senior Software Engineer" />
+                    </div>
+                    <span asp-validation-for="Title"></span>
+                </div>
+
+                <!-- Şirket -->
+                <div class="col-md-6">
+                    <label asp-for="CompanyName" class="form-label">Şirket Adı <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-building"></i>
+                        <input asp-for="CompanyName" class="form-control" placeholder="Örn: NovaTech Solutions" />
+                    </div>
+                    <span asp-validation-for="CompanyName"></span>
+                </div>
+
+                <!-- Alt Başlık -->
+                <div class="col-md-6">
+                    <label asp-for="SideTitle" class="form-label">Alt Başlık</label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-geo-alt"></i>
+                        <input asp-for="SideTitle" class="form-control" placeholder="Örn: İstanbul / Hibrit" />
+                    </div>
+                    <span asp-validation-for="SideTitle"></span>
+                </div>
+
+                <!-- Süre -->
+                <div class="col-md-6">
+                    <label asp-for="Duration" class="form-label">Süre / Tarih Aralığı <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-calendar3"></i>
+                        <input asp-for="Duration" class="form-control" placeholder="Örn: 2024 – Günümüz" />
+                    </div>
+                    <span asp-validation-for="Duration"></span>
+                </div>
+
+                <!-- Çalışma Tipi -->
+                <div class="col-md-6">
+                    <label asp-for="WorkType" class="form-label">Çalışma Tipi <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-clock-history"></i>
+                        <select asp-for="WorkType" class="form-select">
+                            <option value="">Seçiniz...</option>
+                            @foreach (var type in workTypes)
+                            {
+                                <option value="@type">@type</option>
+                            }
+                        </select>
+                    </div>
+                    <span asp-validation-for="WorkType"></span>
+                </div>
+
+                <!-- Durum -->
+                <div class="col-md-6">
+                    <label class="form-label">Durum</label>
+                    <div class="status-box">
+                        <div>
+                            <div class="fw-semibold" style="font-size: 0.86rem;">Portfolyoda göster (Aktif)</div>
+                            <small class="text-secondary">Pasif kayıtlar admin'de kalır, portfolyoda görünmez.</small>
+                        </div>
+                        <div class="form-check form-switch m-0">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Açıklama -->
+                <div class="col-12">
+                    <label asp-for="Description" class="form-label">Açıklama <span class="req">*</span></label>
+                    <textarea asp-for="Description" class="form-control" rows="5"
+                              placeholder="Her görevi ayrı bir satıra yazın..."></textarea>
+                    <small class="text-secondary d-block">Her satır portfolyoda ayrı bir madde (•) olarak görünür.</small>
+                    <span asp-validation-for="Description"></span>
+                </div>
+                <!-- Etiketler -->
+                <div class="col-12">
+                    <label asp-for="Tags" class="form-label">Etiketler (virgülle ayırın)</label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-tags"></i>
+                        <input asp-for="Tags" class="form-control" placeholder="Örn: C#, ASP.NET Core, SQL Server" />
+                    </div>
+                    <span asp-validation-for="Tags"></span>
+                </div>
+            </div>
+
+            <div class="form-card-footer">
+                <a asp-area="Admin" asp-action="ExperienceList" class="btn btn-soft">
+                    <i class="bi bi-arrow-left me-1"></i> Vazgeç
+                </a>
+                <button type="submit" class="btn btn-accent">
+                    <i class="bi bi-check2-circle me-1"></i> Kaydet
+                </button>
+            </div>
+    </form>
 </div>
-</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

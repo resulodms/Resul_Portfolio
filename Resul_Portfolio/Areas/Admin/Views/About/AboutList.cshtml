@@ -1,0 +1,128 @@
+﻿@model List<About>
+@{
+    ViewData["Title"] = "Hakkımda";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+
+
+<div class="list-card">
+    <!-- Başlık -->
+    <div class="list-card-header">
+        <div class="d-flex align-items-center gap-3">
+            <div class="list-card-icon"><i class="bi bi-person"></i></div>
+            <div>
+                <h5 class="mb-0 fw-bold">Hakkımda</h5>
+                <small class="text-secondary">Ana sayfadaki "Hakkımda" bölümünde görünen kişisel bilgiler.</small>
+            </div>
+        </div>
+
+        @* Hakkımda tek kayıtlık içerik: kayıt yoksa ekleme butonu görünür *@
+        @if (!Model.Any())
+        {
+            <a asp-area="Admin" asp-controller="About" asp-action="CreateAbout" class="btn btn-add">
+                <i class="bi bi-plus-lg me-1"></i> Yeni Ekle
+            </a>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <!-- Boş liste durumu -->
+        <div class="empty-state">
+            <div class="empty-icon"><i class="bi bi-person-plus"></i></div>
+            <h6 class="fw-bold mb-1">Henüz Hakkımda bilgisi eklenmedi</h6>
+            <p class="text-secondary small mb-3">Bilgi eklenene kadar ana sayfada Hakkımda bölümü görünmez.</p>
+            <a asp-area="Admin" asp-controller="About" asp-action="CreateAbout" class="btn btn-add">
+                <i class="bi bi-plus-lg me-1"></i> Hemen Ekle
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table list-table">
+                <thead>
+                    <tr>
+                        <th>Ad Soyad</th>
+                        <th>Meslek</th>
+                        <th>Konum</th>
+                        <th>E-posta</th>
+                        <th>Çalışma Durumu</th>
+                        <th class="text-end">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        // Avatar için ad-soyadın baş harfleri (örn. "Resul Ödemiş" -> "RÖ")
+                        var initials = string.Concat(
+                        item.NameSurname.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                        .Take(2)
+                        .Select(x => x[0]));
+
+                        <tr>
+                            <td>
+                                <div class="person-cell">
+                                    <div class="person-avatar">@initials.ToUpper()</div>
+                                    <div>
+                                        <div class="fw-semibold">@item.NameSurname</div>
+                                        <small class="text-secondary">@item.Expert</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>@item.JobTitle</td>
+                            <td><i class="bi bi-geo-alt text-secondary me-1"></i>@item.Location</td>
+                            <td><a href="mailto:@item.Email" class="text-decoration-none">@item.Email</a></td>
+                            <td>
+                                <span class="status-pill">
+                                    <i class="bi bi-check-circle-fill"></i> @item.OpenToWork
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-2">
+                                    <a asp-area="Admin" asp-controller="About" asp-action="UpdateAbout" asp-route-id="@item.AboutId"
+                                       class="btn-icon edit" title="Güncelle">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <button type="button" class="btn-icon delete btn-delete"
+                                            data-id="@item.AboutId" data-name="@item.NameSurname" title="Sil">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Silme öncesi SweetAlert2 onay penceresi
+        document.querySelectorAll(".btn-delete").forEach(btn => {
+            btn.addEventListener("click", function () {
+                const id = this.dataset.id;
+                const name = this.dataset.name;
+
+                Swal.fire({
+                    icon: "warning",
+                    title: "Emin misiniz?",
+                    text: name + " kaydı kalıcı olarak silinecek. Ana sayfadaki Hakkımda bölümü de kaybolacak.",
+                    showCancelButton: true,
+                    confirmButtonText: "Evet, sil",
+                    cancelButtonText: "Vazgeç",
+                    confirmButtonColor: "#D9534F",
+                    cancelButtonColor: "#8490A5",
+                    reverseButtons: true
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        window.location.href = "/Admin/About/DeleteAbout/" + id;
+                    }
+                });
+            });
+        });
+    </script>
+}

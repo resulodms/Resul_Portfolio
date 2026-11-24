@@ -1,0 +1,108 @@
+﻿@model Education
+@{
+    ViewData["Title"] = "Eğitim Ekle";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+<div class="form-card">
+    <form asp-area="Admin" asp-controller="Education" asp-action="CreateEducation" method="post">
+        <div class="form-card-header">
+            <div class="form-card-icon"><i class="bi bi-mortarboard"></i></div>
+            <div>
+                <h5 class="mb-0 fw-bold">Yeni Eğitim Ekle</h5>
+                <small class="text-secondary">Portfolyoda görünecek yeni bir eğitim kaydı ekleyin.</small>
+            </div>
+        </div>
+
+        <div class="form-card-body">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+
+            <div class="row g-4">
+                <!-- Okul -->
+                <div class="col-md-6">
+                    <label asp-for="Title" class="form-label">Okul Adı <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-building"></i>
+                        <input asp-for="Title" class="form-control" placeholder="Örn: Marmara Üniversitesi" />
+                    </div>
+                    <span asp-validation-for="Title"></span>
+                </div>
+
+                <!-- Bölüm -->
+                <div class="col-md-6">
+                    <label asp-for="SubTitle" class="form-label">Bölüm / Derece</label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-journal-bookmark"></i>
+                        <input asp-for="SubTitle" class="form-control" placeholder="Örn: Yönetim Bilişim Sistemleri — Lisans" />
+                    </div>
+                    <span asp-validation-for="SubTitle"></span>
+                </div>
+
+                <!-- Süre -->
+                <div class="col-md-6">
+                    <label asp-for="Duration" class="form-label">Süre <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-calendar3"></i>
+                        <input asp-for="Duration" class="form-control" placeholder="Örn: 2020 – 2024 veya 2024 – Günümüz" />
+                    </div>
+                    <span asp-validation-for="Duration"></span>
+                </div>
+
+                <!-- Konum -->
+                <div class="col-md-6">
+                    <label asp-for="Location" class="form-label">Konum</label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-geo-alt"></i>
+                        <input asp-for="Location" class="form-control" placeholder="Örn: İstanbul, Türkiye" />
+                    </div>
+                    <span asp-validation-for="Location"></span>
+                </div>
+
+                <!-- Durum -->
+                <div class="col-12">
+                    <label class="form-label">Durum</label>
+                    <div class="status-box">
+                        <div>
+                            <div class="fw-semibold" style="font-size: 0.86rem;">Portfolyoda göster (Aktif)</div>
+                            <small class="text-secondary">Pasif kayıtlar admin'de kalır, portfolyoda görünmez.</small>
+                        </div>
+                        <div class="form-check form-switch m-0">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Açıklama -->
+                <div class="col-12">
+                    <label asp-for="Description" class="form-label">Açıklama <span class="req">*</span></label>
+                    <textarea asp-for="Description" class="form-control" rows="4"
+                              placeholder="Bu eğitim sürecinde aldığınız dersleri ve kazanımlarınızı yazın..."></textarea>
+                    <span asp-validation-for="Description"></span>
+                </div>
+
+                <!-- Etiketler -->
+                <div class="col-12">
+                    <label asp-for="Tags" class="form-label">Etiketler (virgülle ayırın)</label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-tags"></i>
+                        <input asp-for="Tags" class="form-control" placeholder="Örn: Veri Yapıları, Algoritmalar, Veritabanı" />
+                    </div>
+                    <span asp-validation-for="Tags"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-card-footer">
+            <a asp-area="Admin" asp-controller="Education" asp-action="EducationList" class="btn btn-soft">
+                <i class="bi bi-arrow-left me-1"></i> Vazgeç
+            </a>
+            <button type="submit" class="btn btn-accent">
+                <i class="bi bi-check2-circle me-1"></i> Kaydet
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

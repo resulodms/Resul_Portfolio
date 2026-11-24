@@ -1,0 +1,111 @@
+﻿@model Skill
+@{
+    ViewData["Title"] = "Yetenek Ekle";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+
+    // Controller'dan gelen mevcut grup adları (datalist önerileri için)
+    var groups = ViewBag.Groups as List<string> ?? new List<string>();
+}
+
+<div class="form-card">
+    <form asp-area="Admin" asp-controller="Skill" asp-action="CreateSkill" method="post">
+        <div class="form-card-header">
+            <div class="form-card-icon"><i class="bi bi-code-slash"></i></div>
+            <div>
+                <h5 class="mb-0 fw-bold">Yeni Yetenek Ekle</h5>
+                <small class="text-secondary">Portfolyoda grup kartında yüzdesiyle görünecek bir yetenek ekleyin.</small>
+            </div>
+        </div>
+
+        <div class="form-card-body">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+
+            <div class="row g-4">
+                <!-- Yetenek Adı -->
+                <div class="col-md-6">
+                    <label asp-for="Name" class="form-label">Yetenek Adı <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-code-slash"></i>
+                        <input asp-for="Name" class="form-control" placeholder="Örn: ASP.NET Core" />
+                    </div>
+                    <span asp-validation-for="Name"></span>
+                </div>
+
+                <!-- Grup -->
+                <div class="col-md-6">
+                    <label asp-for="GroupName" class="form-label">Grup <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-collection"></i>
+                        <input asp-for="GroupName" class="form-control" list="groupList" autocomplete="off"
+                               placeholder="Listeden seçin veya yeni grup yazın" />
+                    </div>
+                    @* Mevcut gruplar öneri olarak gelir; yazım farkı yüzünden aynı grubun ikiye bölünmesini önler *@
+                    <datalist id="groupList">
+                        @foreach (var group in groups)
+                        {
+                            <option value="@group"></option>
+                        }
+                    </datalist>
+                    <span asp-validation-for="GroupName"></span>
+                </div>
+
+                <!-- Seviye -->
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-between align-items-end">
+                        <label asp-for="Percentage" class="form-label">Seviye <span class="req">*</span></label>
+                        <span class="fw-bold" style="color: var(--primary-accent);" id="percentLabel">%@Model?.Percentage</span>
+                    </div>
+                    <input asp-for="Percentage" type="range" class="form-range" min="0" max="100" step="5" id="percentInput" />
+                    <div class="d-flex justify-content-between small text-secondary">
+                        <span>Başlangıç</span><span>Orta</span><span>İleri</span>
+                    </div>
+                    <span asp-validation-for="Percentage"></span>
+                </div>
+
+                <!-- Sıra -->
+                <div class="col-md-6">
+                    <label asp-for="DisplayOrder" class="form-label">Gösterim Sırası</label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-sort-numeric-down"></i>
+                        <input asp-for="DisplayOrder" type="number" min="0" class="form-control" />
+                    </div>
+                    <small class="text-secondary">Grup içinde küçük sayı önce gösterilir.</small>
+                    <span asp-validation-for="DisplayOrder" class="d-block"></span>
+                </div>
+
+                <!-- Durum -->
+                <div class="col-12">
+                    <label class="form-label">Durum</label>
+                    <div class="status-box">
+                        <div>
+                            <div class="fw-semibold" style="font-size: 0.86rem;">Portfolyoda göster (Aktif)</div>
+                            <small class="text-secondary">Pasif yetenekler admin'de kalır, portfolyoda görünmez.</small>
+                        </div>
+                        <div class="form-check form-switch m-0">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-card-footer">
+            <a asp-area="Admin" asp-controller="Skill" asp-action="SkillList" class="btn btn-soft">
+                <i class="bi bi-arrow-left me-1"></i> Vazgeç
+            </a>
+            <button type="submit" class="btn btn-accent">
+                <i class="bi bi-check2-circle me-1"></i> Kaydet
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Kaydırma çubuğu değiştikçe yüzdeyi canlı göster
+        const percentInput = document.getElementById("percentInput");
+        const percentLabel = document.getElementById("percentLabel");
+        percentInput.addEventListener("input", () => percentLabel.textContent = "%" + percentInput.value);
+    </script>
+}

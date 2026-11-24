@@ -1,0 +1,126 @@
+﻿@model HeroSection
+@{
+    ViewData["Title"] = "Ana Sayfa Güncelle";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+@* Form stilleri wwwroot/css/admin-forms.css dosyasından gelir *@
+
+<div class="form-card">
+    <form asp-area="Admin" asp-controller="HeroSection" asp-action="UpdateHeroSection" method="post">
+        @* EF hangi kaydı güncelleyeceğini bu Id'den anlar *@
+        <input type="hidden" asp-for="HeroSectionId" />
+        <div class="form-card-header">
+            <div class="form-card-icon"><i class="bi bi-house-gear"></i></div>
+            <div>
+                <h5 class="mb-0 fw-bold">Ana Sayfa Bilgisini Güncelle</h5>
+                <small class="text-secondary">Karşılama alanındaki bilgileri düzenleyip kaydedin.</small>
+            </div>
+        </div>
+
+        <div class="form-card-body">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+
+            <div class="row g-4">
+
+                <!-- Karşılama -->
+                <div class="col-md-6">
+                    <label asp-for="Title" class="form-label">Karşılama Yazısı <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-emoji-smile"></i>
+                        <input asp-for="Title" class="form-control" placeholder="Örn: Portfolyoma hoş geldiniz" />
+                    </div>
+                    <small class="text-secondary">İsmin üstündeki 👋 rozetinde görünür.</small>
+                    <span asp-validation-for="Title" class="d-block"></span>
+                </div>
+
+                <!-- Ad Soyad -->
+                <div class="col-md-6">
+                    <label asp-for="SubTitle" class="form-label">Ad Soyad <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-person"></i>
+                        <input asp-for="SubTitle" class="form-control" placeholder="Örn: Resul Ödemiş" />
+                    </div>
+                    <small class="text-secondary">"Merhaba, Ben ___" başlığında görünür.</small>
+                    <span asp-validation-for="SubTitle" class="d-block"></span>
+                </div>
+
+                <!-- Profil Görseli -->
+                <div class="col-12">
+                    <label asp-for="ImageUrl" class="form-label">Profil Görseli URL <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-image"></i>
+                        <input asp-for="ImageUrl" id="imageUrlInput" class="form-control" placeholder="Örn: /images/profil.jpg veya https://..." />
+                    </div>
+                    <span asp-validation-for="ImageUrl"></span>
+
+                    <!-- Canlı önizleme -->
+                    <div class="image-preview-box">
+                        <img id="imagePreview" src="@Model?.ImageUrl" alt="Önizleme"
+                             style="@(string.IsNullOrEmpty(Model?.ImageUrl) ? "display:none" : "")" />
+                        <small class="text-secondary" id="imagePreviewText">
+                            @(string.IsNullOrEmpty(Model?.ImageUrl) ? "URL girildiğinde önizleme burada görünür." : "Mevcut görsel")
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Tanıtım Metni -->
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-end">
+                        <label asp-for="Description" class="form-label">Tanıtım Metni <span class="req">*</span></label>
+                        <span class="char-counter" id="descCounter">0 / 500</span>
+                    </div>
+                    <textarea asp-for="Description" id="descInput" class="form-control" rows="4"
+                              placeholder="Kendinizi kısaca tanıtın..."></textarea>
+                    <span asp-validation-for="Description"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-card-footer">
+            <a asp-area="Admin" asp-controller="HeroSection" asp-action="HeroSectionList" class="btn btn-soft">
+                <i class="bi bi-arrow-left me-1"></i> Vazgeç
+            </a>
+            <button type="submit" class="btn btn-accent">
+                <i class="bi bi-check2-circle me-1"></i> Değişiklikleri Kaydet
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Profil görseli canlı önizleme
+        const urlInput = document.getElementById("imageUrlInput");
+        const preview = document.getElementById("imagePreview");
+        const previewText = document.getElementById("imagePreviewText");
+
+        urlInput.addEventListener("input", function () {
+            const url = this.value.trim();
+            if (url) {
+                preview.src = url;
+                preview.style.display = "";
+                previewText.textContent = "Önizleme";
+            } else {
+                preview.style.display = "none";
+                previewText.textContent = "URL girildiğinde önizleme burada görünür.";
+            }
+        });
+        preview.addEventListener("error", function () {
+            this.style.display = "none";
+            previewText.textContent = "Görsel yüklenemedi, URL'yi kontrol edin.";
+        });
+
+        // Tanıtım metni karakter sayacı (entity'de StringLength(500))
+        const descInput = document.getElementById("descInput");
+        const counter = document.getElementById("descCounter");
+        function updateCounter() {
+            const len = descInput.value.length;
+            counter.textContent = len + " / 500";
+            counter.classList.toggle("over", len > 500);
+        }
+        descInput.addEventListener("input", updateCounter);
+        updateCounter();
+    </script>
+}

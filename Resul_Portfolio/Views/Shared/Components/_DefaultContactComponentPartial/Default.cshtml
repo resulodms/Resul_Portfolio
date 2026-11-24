@@ -1,0 +1,115 @@
+﻿@model Contact
+<section id="contact" style="background-color: var(--bg-secondary);">
+    <div class="container">
+        <div class="text-center mb-5 reveal-on-scroll">
+            <span class="section-eyebrow">İLETİŞİME GEÇELİM</span>
+            <h2 class="section-title">Birlikte Harika İşler Üretebiliriz.</h2>
+            <p class="section-subtitle">Yeni projeler, iş birlikleri veya yalnızca merhaba demek için benimle iletişime geçebilirsiniz.</p>
+        </div>
+
+        <div class="row g-5">
+            <!-- Left: Contact Details -->
+            <div class="col-lg-5 reveal-on-scroll">
+                <div class="contact-info-card">
+                    <h4 class="fs-4 fw-bold mb-3">İletişim Bilgileri</h4>
+                    <p class="text-secondary mb-4">
+                        @Model.Description
+                    </p>
+
+                    <div class="contact-item">
+                        <div class="contact-icon bg-icon-purple">
+                            <i class="bi bi-envelope"></i>
+                        </div>
+                        <div>
+                            <div class="text-secondary small fw-medium">E-posta</div>
+                            <a href="mailto:@Model.Email" class="text-decoration-none fw-bold text-dark">@Model.Email</a>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon bg-icon-blue">
+                            <i class="bi bi-geo-alt"></i>
+                        </div>
+                        <div>
+                            <div class="text-secondary small fw-medium">Konum</div>
+                            <div class="fw-bold text-dark">@Model.Location</div>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon bg-icon-mint">
+                            <i class="bi bi-linkedin"></i>
+                        </div>
+                        <div>
+                            <div class="text-secondary small fw-medium">LinkedIn</div>
+                            <a href="@Model.Linkedin" target="_blank" rel="noopener" class="text-decoration-none fw-bold text-dark">Resul Ödemiş</a>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon bg-icon-peach">
+                            <i class="bi bi-github"></i>
+                        </div>
+                        <div>
+                            <div class="text-secondary small fw-medium">GitHub</div>
+                            <a href="@Model.Github"  target="_blank" rel="noopener" class="text-decoration-none fw-bold text-dark">github.com/resulodms/</a>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 p-3 rounded-4 bg-white border border-light-subtle">
+                        <div class="d-flex align-items-center gap-2 text-secondary small">
+                            <i class="bi bi-clock-history text-primary"></i> @Model.SubDescription
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Contact Form -->
+            <div class="col-lg-7 reveal-on-scroll">
+                <div class="contact-form-card">
+                    <form id="contactForm" asp-controller="Default" asp-action="SendMessage" method="post" novalidate>
+                        @* CSRF koruması: [ValidateAntiForgeryToken] bu gizli alanı kontrol eder *@
+                        @Html.AntiForgeryToken()
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="contactFullName" class="form-label">Adınız Soyadınız *</label>
+                                <input type="text" class="form-control" id="contactFullName" name="NameSurname"
+                                       placeholder="Örn: Ahmet Yılmaz" required maxlength="100">
+                                <div class="invalid-feedback" data-error-for="NameSurname">Lütfen adınızı ve soyadınızı giriniz.</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="contactEmail" class="form-label">E-posta Adresiniz *</label>
+                                <input type="email" class="form-control" id="contactEmail" name="Email"
+                                       placeholder="Örn: ahmet@example.com" required>
+                                <div class="invalid-feedback" data-error-for="Email">Geçerli bir e-posta adresi giriniz.</div>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="contactSubject" class="form-label">Konu *</label>
+                                <input type="text" class="form-control" id="contactSubject" name="Subject"
+                                       placeholder="Örn: Proje İş Birliği veya Danışmanlık" required maxlength="150">
+                                <div class="invalid-feedback" data-error-for="Subject">Lütfen mesaj konusunu belirtiniz.</div>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="contactMessage" class="form-label">Mesajınız *</label>
+                                <textarea class="form-control" id="contactMessage" name="MessageDetail" rows="5"
+                                          placeholder="Projeniz veya paylaşmak istedikleriniz hakkında detay verebilirsiniz..."
+                                          required minlength="10" maxlength="2000"></textarea>
+                                <div class="invalid-feedback" data-error-for="MessageDetail">Mesajınız en az 10 karakter olmalıdır.</div>
+                            </div>
+
+                            <div class="col-12 mt-4">
+                                <button type="submit" id="contactSubmitBtn" class="btn-custom-primary w-100 justify-content-center py-3">
+                                    <i class="bi bi-send-fill"></i> Mesaj Gönder
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

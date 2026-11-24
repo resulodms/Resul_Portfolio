@@ -1,0 +1,42 @@
+﻿@model Category
+@{
+    ViewData["Title"] = "Kategori Güncelle";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+<div class="form-card" style="max-width: 640px;">
+    <form asp-area="Admin" asp-controller="Category" asp-action="UpdateCategory" method="post">
+        <input type="hidden" asp-for="CategoryId" />
+        <div class="form-card-header">
+            <div class="form-card-icon"><i class="bi bi-tags"></i></div>
+            <div>
+                <h5 class="mb-0 fw-bold">Kategori Güncelle</h5>
+                <small class="text-secondary">Kategoriler proje formunda seçilir ve portfolyoda filtre olarak görünür.</small>
+            </div>
+        </div>
+
+        <div class="form-card-body">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+
+            <label asp-for="CategoryName" class="form-label">Kategori Adı <span class="req">*</span></label>
+            <div class="input-icon-wrap">
+                <i class="bi bi-tag"></i>
+                <input asp-for="CategoryName" class="form-control" placeholder="Örn: Web Uygulamaları" />
+            </div>
+            <span asp-validation-for="CategoryName"></span>
+        </div>
+
+        <div class="form-card-footer">
+            <a asp-area="Admin" asp-controller="Category" asp-action="CategoryList" class="btn btn-soft">
+                <i class="bi bi-arrow-left me-1"></i> Vazgeç
+            </a>
+            <button type="submit" class="btn btn-accent">
+                <i class="bi bi-check2-circle me-1"></i> Güncelle
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

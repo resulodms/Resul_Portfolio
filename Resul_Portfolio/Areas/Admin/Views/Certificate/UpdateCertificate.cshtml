@@ -1,0 +1,87 @@
+﻿@model Certificate
+@{
+    ViewData["Title"] = "Sertifika Güncelle";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+<div class="form-card">
+    <form asp-area="Admin" asp-controller="Certificate" asp-action="UpdateCertificate" method="post">
+        <input type="hidden" asp-for="CertificateId" />
+        <div class="form-card-header">
+            <div class="form-card-icon"><i class="bi bi-award"></i></div>
+            <div>
+                <h5 class="mb-0 fw-bold">Yeni Sertifika Ekle</h5>
+                <small class="text-secondary">Portfolyodaki Sertifikalarım bölümünde görünecek bir sertifika ekleyin.</small>
+            </div>
+        </div>
+
+        <div class="form-card-body">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label asp-for="Title" class="form-label">Sertifika Adı <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-award"></i>
+                        <input asp-for="Title" class="form-control" placeholder="Örn: ASP.NET Core MVC Eğitimi" />
+                    </div>
+                    <span asp-validation-for="Title"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Issuer" class="form-label">Veren Kurum <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-building"></i>
+                        <input asp-for="Issuer" class="form-control" placeholder="Örn: BTK Akademi" />
+                    </div>
+                    <span asp-validation-for="Issuer"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="IssueDate" class="form-label">Alınma Tarihi <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-calendar3"></i>
+                        @* type="date": saat olmadan sadece tarih seçici *@
+                        <input asp-for="IssueDate" type="date" class="form-control" />
+                    </div>
+                    <span asp-validation-for="IssueDate"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="CertificateUrl" class="form-label">Sertifika Linki</label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-link-45deg"></i>
+                        <input asp-for="CertificateUrl" type="url" class="form-control" placeholder="https://..." />
+                    </div>
+                    <span asp-validation-for="CertificateUrl"></span>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">Durum</label>
+                    <div class="status-box">
+                        <div>
+                            <div class="fw-semibold" style="font-size: 0.86rem;">Portfolyoda göster (Aktif)</div>
+                            <small class="text-secondary">Pasif sertifikalar admin'de kalır, portfolyoda görünmez.</small>
+                        </div>
+                        <div class="form-check form-switch m-0">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-card-footer">
+            <a asp-area="Admin" asp-controller="Certificate" asp-action="CertificateList" class="btn btn-soft">
+                <i class="bi bi-arrow-left me-1"></i> Vazgeç
+            </a>
+            <button type="submit" class="btn btn-accent">
+                <i class="bi bi-check2-circle me-1"></i> Güncelle
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,122 @@
+﻿@model List<Education>
+@{
+    ViewData["Title"] = "Eğitim";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+@* Stiller wwwroot/css/admin-forms.css dosyasından gelir *@
+
+<div class="list-card">
+    <!-- Başlık -->
+    <div class="list-card-header">
+        <div class="d-flex align-items-center gap-3">
+            <div class="list-card-icon"><i class="bi bi-mortarboard"></i></div>
+            <div>
+                <h5 class="mb-0 fw-bold">Eğitim Hayatım</h5>
+                <small class="text-secondary">
+                    Toplam @Model.Count kayıt ·
+                    <span class="text-success fw-semibold">@Model.Count(x => x.IsActive) aktif</span> ·
+                    <span class="fw-semibold">@Model.Count(x => !x.IsActive) pasif</span>
+                    (pasif kayıtlar portfolyoda görünmez)
+                </small>
+            </div>
+        </div>
+
+        <a asp-area="Admin" asp-controller="Education" asp-action="CreateEducation" class="btn btn-add">
+            <i class="bi bi-plus-lg me-1"></i> Yeni Eğitim
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <!-- Boş liste durumu -->
+        <div class="empty-state">
+            <div class="empty-icon"><i class="bi bi-mortarboard"></i></div>
+            <h6 class="fw-bold mb-1">Henüz eğitim bilgisi eklenmedi</h6>
+            <p class="text-secondary small mb-3">Eklediğiniz aktif eğitim kayıtları portfolyoda tarih sırasına göre listelenir.</p>
+            <a asp-area="Admin" asp-controller="Education" asp-action="CreateEducation" class="btn btn-add">
+                <i class="bi bi-plus-lg me-1"></i> İlk Eğitimi Ekle
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table list-table">
+                <thead>
+                    <tr>
+                        <th>Okul</th>
+                        <th>Tarih</th>
+                        <th>Konum</th>
+                        <th>Durum</th>
+                        <th class="text-end">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">@item.Title</div>
+                                <small class="text-secondary">@item.SubTitle</small>
+                            </td>
+                            <td class="text-nowrap"><i class="bi bi-calendar3 text-secondary me-1"></i>@item.Duration</td>
+                            <td>@(string.IsNullOrEmpty(item.Location) ? "-" : item.Location)</td>
+                            <td>
+                                @* Aktif/Pasif renkli etiket (case 01) *@
+                                @if (item.IsActive)
+                                {
+                                    <span class="status-pill"><i class="bi bi-check-circle-fill"></i> Aktif</span>
+                                }
+                                else
+                                {
+                                    <span class="status-pill" style="background:#F1F2F6;color:#6B7489;border-color:#DFE2EA;"><i class="bi bi-eye-slash-fill"></i> Pasif</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-2">
+                                    <a asp-area="Admin" asp-controller="Education" asp-action="UpdateEducation" asp-route-id="@item.EducationId"
+                                       class="btn-icon edit" title="Güncelle">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <button type="button" class="btn-icon delete btn-delete"
+                                            data-id="@item.EducationId" data-name="@item.Title" title="Sil">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Silme öncesi SweetAlert2 onay penceresi
+        document.querySelectorAll(".btn-delete").forEach(btn => {
+            btn.addEventListener("click", function () {
+                const id = this.dataset.id;
+                const name = this.dataset.name;
+
+                Swal.fire({
+                    icon: "warning",
+                    title: "Emin misiniz?",
+                    text: "\"" + name + "\" eğitim kaydı kalıcı olarak silinecek.",
+                    showCancelButton: true,
+                    confirmButtonText: "Evet, sil",
+                    cancelButtonText: "Vazgeç",
+                    confirmButtonColor: "#D9534F",
+                    cancelButtonColor: "#8490A5",
+                    reverseButtons: true
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        window.location.href = "/Admin/Education/DeleteEducation/" + id;
+                    }
+                });
+            });
+        });
+    </script>
+}

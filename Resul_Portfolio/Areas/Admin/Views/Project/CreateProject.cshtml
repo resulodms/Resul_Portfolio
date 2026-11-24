@@ -1,0 +1,158 @@
+﻿@model Project
+@{
+    ViewData["Title"] = "Proje Ekle";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+
+    var categories = ViewBag.Categories as SelectList;
+    var hasCategory = categories != null && categories.Any();
+}
+
+<div class="form-card">
+    @* Dosya yükleyen formlarda enctype="multipart/form-data" ŞART *@
+    <form asp-area="Admin" asp-controller="Project" asp-action="CreateProject" method="post" enctype="multipart/form-data">
+        <div class="form-card-header">
+            <div class="form-card-icon"><i class="bi bi-grid"></i></div>
+            <div>
+                <h5 class="mb-0 fw-bold">Yeni Proje Ekle</h5>
+                <small class="text-secondary">Portfolyonun Projelerim bölümünde görünecek bir proje ekleyin.</small>
+            </div>
+        </div>
+
+        <div class="form-card-body">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+
+            @if (!hasCategory)
+            {
+                <div class="alert alert-warning d-flex align-items-center gap-2">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <div>
+                        Proje ekleyebilmek için önce bir kategori oluşturmalısınız.
+                        <a asp-area="Admin" asp-controller="Category" asp-action="CreateCategory" class="fw-semibold">Kategori ekle →</a>
+                    </div>
+                </div>
+            }
+
+            <div class="row g-4">
+                <!-- Proje Adı -->
+                <div class="col-md-7">
+                    <label asp-for="Title" class="form-label">Proje Adı <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-type"></i>
+                        <input asp-for="Title" class="form-control" placeholder="Örn: Kişisel Portfolyo Yönetim Paneli" />
+                    </div>
+                    <span asp-validation-for="Title"></span>
+                </div>
+
+                <!-- Kategori (SelectList ile dropdown) -->
+                <div class="col-md-5">
+                    <label asp-for="CategoryId" class="form-label">Kategori <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-tags"></i>
+                        <select asp-for="CategoryId" asp-items="categories" class="form-select ps-5">
+                            <option value="0">-- Kategori seçin --</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="CategoryId"></span>
+                </div>
+
+                <!-- Kapak Görseli (IFormFile) -->
+                <div class="col-12">
+                    <label class="form-label" for="coverImage">Kapak Görseli <span class="req">*</span></label>
+                    <input type="file" name="coverImage" id="coverImage" class="form-control"
+                           accept=".jpg,.jpeg,.png,.webp" />
+                    <small class="text-secondary">JPG, PNG veya WEBP · en fazla 2 MB · önerilen oran 16:10</small>
+                    <span asp-validation-for="CoverImageUrl" class="d-block"></span>
+
+                    <div class="mt-2">
+                        <img id="coverPreview" src="" alt="Önizleme"
+                             style="display:none; max-width: 280px; border-radius: 12px; border: 1px solid var(--border-color);" />
+                    </div>
+                </div>
+
+                <!-- Açıklama -->
+                <div class="col-12">
+                    <label asp-for="Description" class="form-label">Açıklama <span class="req">*</span></label>
+                    <textarea asp-for="Description" class="form-control" rows="4"
+                              placeholder="Projenin amacını, çözdüğü problemi ve öne çıkan özelliklerini yazın..."></textarea>
+                    <span asp-validation-for="Description"></span>
+                </div>
+
+                <!-- Etiketler -->
+                <div class="col-12">
+                    <label asp-for="Tags" class="form-label">Kullanılan Teknolojiler (virgülle ayırın)</label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-code-slash"></i>
+                        <input asp-for="Tags" class="form-control" placeholder="Örn: ASP.NET Core, EF Core, SQL Server" />
+                    </div>
+                    <span asp-validation-for="Tags"></span>
+                </div>
+
+                <!-- GitHub -->
+                <div class="col-md-6">
+                    <label asp-for="GithubUrl" class="form-label">GitHub Linki</label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-github"></i>
+                        <input asp-for="GithubUrl" type="url" class="form-control" placeholder="https://github.com/..." />
+                    </div>
+                    <span asp-validation-for="GithubUrl"></span>
+                </div>
+
+                <!-- Canlı Demo -->
+                <div class="col-md-6">
+                    <label asp-for="LiveDemoUrl" class="form-label">Canlı Demo Linki</label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-box-arrow-up-right"></i>
+                        <input asp-for="LiveDemoUrl" type="url" class="form-control" placeholder="https://..." />
+                    </div>
+                    <span asp-validation-for="LiveDemoUrl"></span>
+                </div>
+
+                <!-- Durum -->
+                <div class="col-12">
+                    <label class="form-label">Durum</label>
+                    <div class="status-box">
+                        <div>
+                            <div class="fw-semibold" style="font-size: 0.86rem;">Portfolyoda göster (Aktif)</div>
+                            <small class="text-secondary">Pasif projeler admin'de kalır, portfolyoda görünmez.</small>
+                        </div>
+                        <div class="form-check form-switch m-0">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-card-footer">
+            <a asp-area="Admin" asp-controller="Project" asp-action="ProjectList" class="btn btn-soft">
+                <i class="bi bi-arrow-left me-1"></i> Vazgeç
+            </a>
+            <button type="submit" class="btn btn-accent" @(hasCategory ? "" : "disabled")>
+                <i class="bi bi-check2-circle me-1"></i> Kaydet
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Seçilen görselin önizlemesi + istemci tarafı ön kontrol
+        const fileInput = document.getElementById("coverImage");
+        const preview = document.getElementById("coverPreview");
+
+        fileInput.addEventListener("change", function () {
+            const file = this.files[0];
+            if (!file) return;
+
+            if (file.size > 2 * 1024 * 1024) {
+                Swal.fire({ icon: "warning", title: "Dosya çok büyük", text: "Görsel en fazla 2 MB olabilir." });
+                this.value = "";
+                return;
+            }
+
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = "block";
+        });
+    </script>
+}

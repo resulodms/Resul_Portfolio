@@ -399,8 +399,18 @@
                 padding-right: 16px;
             }
         }
-    </style>
-
+    </style>({
+        icon: 'error',
+        title: 'Hata',
+        text: @Html.Raw(Json.Serialize(TempData["Error"]))
+    });
+    <link href="~/css/admin-forms.css" rel="stylesheet" />
+    @if(TempData["Error"]!=null)
+    {
+        <script>
+            Swal.fire
+        </script>
+    }
     @await RenderSectionAsync("Styles", required: false)
 </head>
 
@@ -409,9 +419,9 @@
     <!-- ==================== SIDEBAR ==================== -->
     <aside id="sidebar-wrapper">
         <a href="/Admin" class="sidebar-brand">
-            <div class="brand-mark">P</div>
+            <div class="brand-mark">Ö</div>
             <div>
-                <div class="fw-bold text-white lh-1" style="font-family: 'Plus Jakarta Sans';">Poyraz.</div>
+                <div class="fw-bold text-white lh-1" style="font-family: 'Plus Jakarta Sans';">Ödemiş</div>
                 <small class="text-white-50" style="font-size: 0.72rem;">Portfolio Admin</small>
             </div>
         </a>
@@ -421,43 +431,56 @@
             <a href="/Admin/Dashboard/Index" class="sidebar-link @Active("Dashboard")">
                 <i class="bi bi-speedometer2"></i><span>Dashboard</span>
             </a>
+            <a href="/" target="_blank" class="sidebar-link">
+                <i class="bi bi-box-arrow-up-right"></i><span>Portfolyoyu Görüntüle</span>
+            </a>
 
             <div class="nav-group-title">İçerik</div>
-            <a href="/Admin/About/Index" class="sidebar-link @Active("About")">
+            <a href="/Admin/HeroSection/HeroSectionList" class="sidebar-link @Active("HeroSection")">
+                <i class="bi bi-house"></i><span>Ana Sayfa</span>
+            </a>
+            <a href="/Admin/About/AboutList" class="sidebar-link @Active("About")">
                 <i class="bi bi-person"></i><span>Hakkımda</span>
             </a>
-            <a href="/Admin/Education/Index" class="sidebar-link @Active("Education")">
+            <a href="/Admin/Education/EducationList" class="sidebar-link @Active("Education")">
                 <i class="bi bi-mortarboard"></i><span>Eğitim</span>
             </a>
-            <a href="/Admin/Deneyimler/DeneyimListesi" class="sidebar-link @Active("Deneyimler")">
+            <a href="/Admin/Experience/ExperienceList" class="sidebar-link @Active("Experience")">
                 <i class="bi bi-briefcase"></i><span>Deneyimler</span>
             </a>
-            <a href="/Admin/Skill/Index" class="sidebar-link @Active("Skill")">
+            <a href="/Admin/Skill/SkillList" class="sidebar-link @Active("Skill")">
                 <i class="bi bi-code-slash"></i><span>Yetenekler</span>
             </a>
-            <a href="/Admin/Project/Index" class="sidebar-link @Active("Project")">
+            <a href="/Admin/Category/CategoryList" class="sidebar-link @Active("Category")">
+                <i class="bi bi-tags"></i><span>Kategoriler</span>
+            </a>
+            <a href="/Admin/Project/ProjectList" class="sidebar-link @Active("Project")">
                 <i class="bi bi-grid"></i><span>Projeler</span>
+            </a>
+            <a href="/Admin/Certificate/CertificateList" class="sidebar-link @Active("Certificate")">
+                <i class="bi bi-award"></i><span>Sertifikalar</span>
             </a>
 
             <div class="nav-group-title">İletişim & Sistem</div>
-            <a href="/Admin/Message/Index" class="sidebar-link @Active("Message")">
+            <a href="/Admin/Message/MessageList" class="sidebar-link @Active("Message")">
                 <i class="bi bi-envelope"></i><span>Mesajlar</span>
             </a>
-            <a href="/Admin/Setting/Index" class="sidebar-link @Active("Setting")">
-                <i class="bi bi-gear"></i><span>Ayarlar</span>
+            <a href="/Admin/Contact/ContactList" class="sidebar-link @Active("Contact")">
+                <i class="bi bi-gear"></i><span>Site Ayarları</span>
             </a>
         </nav>
 
         <div class="sidebar-user">
-            <div class="user-avatar">MY</div>
+            <div class="user-avatar">RÖ</div>
             <div class="overflow-hidden">
-                <div class="fw-semibold text-white text-truncate" style="font-size: 0.83rem;">Murat Yücedağ</div>
+                <div class="fw-semibold text-white text-truncate" style="font-size: 0.83rem;">Resul Ödemiş</div>
                 <div style="font-size: 0.7rem; color: #B3BFDF;">Yönetici</div>
             </div>
         </div>
     </aside>
 
-    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar-overlay" onclick="toggleSidebar()">
+        </div>
 
     <!-- ==================== MAIN ==================== -->
     <div id="main-content-wrapper">
@@ -475,21 +498,28 @@
                 <a href="/" target="_blank" class="nav-icon-btn" title="Siteyi Görüntüle">
                     <i class="bi bi-box-arrow-up-right"></i>
                 </a>
-                <a href="/Admin/Message/Index" class="nav-icon-btn" title="Mesajlar">
+                <a href="/Admin/Message/MessageList" class="nav-icon-btn" title="Mesajlar">
                     <i class="bi bi-envelope"></i>
                 </a>
 
                 <div class="dropdown">
                     <button class="nav-user-btn" data-bs-toggle="dropdown" aria-expanded="false">
-                        <div class="user-avatar">MY</div>
-                        <span class="fw-semibold d-none d-md-inline" style="font-size: 0.85rem;">Murat Yücedağ</span>
+                        <div class="user-avatar">RÖ</div>
+                        <span class="fw-semibold d-none d-md-inline" style="font-size: 0.85rem;">Resul Ödemiş</span>
                         <i class="bi bi-chevron-down small text-secondary d-none d-md-inline"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="/Admin/Profile/Index"><i class="bi bi-person-circle"></i> Profilim</a></li>
-                        <li><a class="dropdown-item" href="/Admin/Setting/Index"><i class="bi bi-gear"></i> Ayarlar</a></li>
+                        <li><a class="dropdown-item" href="/Admin/About/AboutList"><i class="bi bi-person-circle"></i> Profilim</a></li>
+                        <li><a class="dropdown-item" href="/Admin/Contact/ContactList"><i class="bi bi-gear"></i> Ayarlar</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="/Login/Logout"><i class="bi bi-box-arrow-right"></i> Çıkış Yap</a></li>
+                        <li><a class="dropdown-item" href="/" target="_blank"><i class="bi bi-box-arrow-up-right"></i> Portfolyoyu Aç</a></li>
+                        <li>
+                            <form asp-area="" asp-controller="Login" asp-action="Logout" method="post" class="m-0">
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="bi bi-box-arrow-right"></i> Çıkış Yap
+                                </button>
+                            </form>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -506,7 +536,7 @@
                     }
                     @if (!string.IsNullOrEmpty(controller))
                     {
-                        <li class="breadcrumb-item"><a href="@(string.IsNullOrEmpty(area) ? "" : "/" + area)/@controller">@controller</a></li>
+                        <li class="breadcrumb-item">@controller</li>
                     }
                     @if (!string.IsNullOrEmpty(action))
                     {
@@ -523,7 +553,7 @@
 
         <!-- FOOTER -->
         <footer class="admin-footer">
-            <span>© @DateTime.Now.Year Poyraz. Portfolio Admin — Tüm hakları saklıdır.</span>
+            <span>© @DateTime.Now.Year Ödemiş. Portfolio Admin — Tüm hakları saklıdır.</span>
             <span>
                 <a href="/" target="_blank">Siteyi Görüntüle</a>
                 <span class="mx-2">•</span>
@@ -532,13 +562,27 @@
         </footer>
     </div>
 
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <script>
         function toggleSidebar() {
             document.body.classList.toggle("sidebar-open");
         }
     </script>
-
+    @if(TempData["Success"] !=null)
+    {
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Başarılı',
+                text: @Html.Raw(Json.Serialize(TempData["Success"]))
+        });
+    </script>
+        
+    }
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

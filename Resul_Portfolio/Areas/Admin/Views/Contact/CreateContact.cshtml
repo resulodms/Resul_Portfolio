@@ -1,0 +1,98 @@
+﻿@model Contact
+@{
+    ViewData["Title"] = "Site Ayarları Ekle";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+@* Form stilleri wwwroot/css/admin-forms.css dosyasından gelir *@
+
+<div class="form-card">
+    <form asp-area="Admin" asp-controller="Contact" asp-action="CreateContact" method="post">
+        @* Yeni kayıtta Id veritabanı tarafından verilir *@
+        <div class="form-card-header">
+            <div class="form-card-icon"><i class="bi bi-gear"></i></div>
+            <div>
+                <h5 class="mb-0 fw-bold">Site Ayarlarını Oluştur</h5>
+                <small class="text-secondary">İletişim bilgileri ve sosyal bağlantılar portfolyonun birçok yerinde kullanılır.</small>
+            </div>
+        </div>
+
+        <div class="form-card-body">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+
+            <div class="row g-4">
+
+                <!-- E-posta -->
+                <div class="col-md-6">
+                    <label asp-for="Email" class="form-label">E-posta <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-envelope"></i>
+                        <input asp-for="Email" type="email" class="form-control" placeholder="Örn: ornek@mail.com" />
+                    </div>
+                    <span asp-validation-for="Email"></span>
+                </div>
+
+                <!-- Konum -->
+                <div class="col-md-6">
+                    <label asp-for="Location" class="form-label">Konum <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-geo-alt"></i>
+                        <input asp-for="Location" class="form-control" placeholder="Örn: İstanbul, Türkiye" />
+                    </div>
+                    <span asp-validation-for="Location"></span>
+                </div>
+
+                <!-- LinkedIn -->
+                <div class="col-md-6">
+                    <label asp-for="Linkedin" class="form-label">LinkedIn Profil Linki <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-linkedin"></i>
+                        <input asp-for="Linkedin" type="url" class="form-control" placeholder="https://www.linkedin.com/in/kullaniciadi" />
+                    </div>
+                    <span asp-validation-for="Linkedin"></span>
+                </div>
+
+                <!-- GitHub -->
+                <div class="col-md-6">
+                    <label asp-for="Github" class="form-label">GitHub Profil Linki <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-github"></i>
+                        <input asp-for="Github" type="url" class="form-control" placeholder="https://github.com/kullaniciadi" />
+                    </div>
+                    <span asp-validation-for="Github"></span>
+                </div>
+
+                <!-- Açıklama -->
+                <div class="col-12">
+                    <label asp-for="Description" class="form-label">İletişim Açıklaması <span class="req">*</span></label>
+                    <textarea asp-for="Description" class="form-control" rows="3"
+                              placeholder="İletişim bölümündeki bilgi kartında görünen açıklama metni..."></textarea>
+                    <span asp-validation-for="Description"></span>
+                </div>
+
+                <!-- Alt Açıklama -->
+                <div class="col-12">
+                    <label asp-for="SubDescription" class="form-label">Alt Bilgi Notu <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-clock-history"></i>
+                        <input asp-for="SubDescription" class="form-control" placeholder="Örn: Genellikle 24 saat içinde yanıt verilir." />
+                    </div>
+                    <span asp-validation-for="SubDescription"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-card-footer">
+            <a asp-area="Admin" asp-controller="Contact" asp-action="ContactList" class="btn btn-soft">
+                <i class="bi bi-arrow-left me-1"></i> Vazgeç
+            </a>
+            <button type="submit" class="btn btn-accent">
+                <i class="bi bi-check2-circle me-1"></i> Kaydet
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

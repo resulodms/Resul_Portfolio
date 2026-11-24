@@ -1,0 +1,260 @@
+﻿@model DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+
+    var readCount = Model.MessageCount - Model.UnreadMessageCount;
+    var readPercent = Model.MessageCount == 0 ? 0 : (int)Math.Round(readCount * 100.0 / Model.MessageCount);
+    var maxCategory = Model.CategoryStats.Any() ? Model.CategoryStats.Max(x => x.ProjectCount) : 1;
+
+    // İstatistik kartları: (başlık, sayı, ikon, renk, link)
+    var stats = new[]
+    {
+        ("Toplam Proje", Model.ProjectCount, "bi-grid", "#8276D9", "/Admin/Project/ProjectList"),
+        ("Aktif Proje", Model.ActiveProjectCount, "bi-check2-circle", "#2BB673", "/Admin/Project/ProjectList"),
+        ("Kategoriler", Model.CategoryCount, "bi-tags", "#4A90E2", "/Admin/Category/CategoryList"),
+        ("Yetenekler", Model.SkillCount, "bi-code-slash", "#2BB673", "/Admin/Skill/SkillList"),
+        ("Deneyimler", Model.ExperienceCount, "bi-briefcase", "#F5A524", "/Admin/Experience/ExperienceList"),
+        ("Eğitimler", Model.EducationCount, "bi-mortarboard", "#E5677D", "/Admin/Education/EducationList"),
+        ("Toplam Mesaj", Model.MessageCount, "bi-envelope", "#4A90E2", "/Admin/Message/MessageList"),
+        ("Okunmamış Mesaj", Model.UnreadMessageCount, "bi-envelope-exclamation", "#F5A524", "/Admin/Message/MessageList"),
+        ("CV İndirme", Model.CvDownloadCount, "bi-download", "#2BB673", "/Admin/Contact/ContactList")
+    };
+}
+
+@section Styles {
+    <style>
+        .stat-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 18px 20px;
+            box-shadow: var(--shadow-subtle);
+            text-decoration: none;
+            color: inherit;
+            transition: transform .2s, box-shadow .2s;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 24px rgba(130,118,217,.12);
+                color: inherit;
+            }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .quick-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border: 1px dashed var(--border-color);
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: .88rem;
+            transition: all .2s;
+        }
+
+            .quick-btn:hover {
+                border-color: var(--primary-accent);
+                color: var(--primary-accent);
+                background: var(--pastel-purple);
+            }
+    </style>
+}
+
+<!-- Karşılama -->
+<div class="mb-4">
+    <h4 class="fw-bold mb-1">Hoş geldin, Resul 👋</h4>
+    <p class="text-secondary mb-0">
+        Portfolyonun genel durumu aşağıda.
+        @if (Model.UnreadMessageCount > 0)
+        {
+            <a href="/Admin/Message/MessageList" class="fw-semibold text-warning text-decoration-none">@Model.UnreadMessageCount okunmamış mesajın var →</a>
+        }
+    </p>
+</div>
+
+<!-- İstatistik Kartları -->
+<div class="row g-3 mb-4">
+    @foreach (var (title, value, icon, color, link) in stats)
+    {
+        <div class="col-xl-3 col-md-6">
+            <a href="@link" class="stat-card">
+                <div class="stat-icon" style="background: @(color)1A; color: @color;">
+                    <i class="bi @icon"></i>
+                </div>
+                <div>
+                    <div class="text-secondary small">@title</div>
+                    <div class="stat-value">@value</div>
+                </div>
+            </a>
+        </div>
+    }
+</div>
+
+<!-- Hızlı İşlemler -->
+<div class="list-card mb-4">
+    <div class="p-3 d-flex flex-wrap gap-2 align-items-center">
+        <span class="fw-semibold me-2"><i class="bi bi-lightning-charge text-warning"></i> Hızlı İşlemler:</span>
+        <a href="/Admin/Project/CreateProject" class="quick-btn"><i class="bi bi-plus-circle"></i> Yeni Proje</a>
+        <a href="/Admin/Skill/CreateSkill" class="quick-btn"><i class="bi bi-plus-circle"></i> Yeni Yetenek</a>
+        <a href="/Admin/Experience/CreateExperience" class="quick-btn"><i class="bi bi-plus-circle"></i> Yeni Deneyim</a>
+        <a href="/Admin/Message/MessageList" class="quick-btn"><i class="bi bi-envelope"></i> Mesajlar</a>
+        <a href="/Admin/Contact/ContactList" class="quick-btn"><i class="bi bi-gear"></i> Site Ayarları</a>
+        <a href="/" target="_blank" class="quick-btn"><i class="bi bi-box-arrow-up-right"></i> Portfolyoyu Görüntüle</a>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Son 5 Mesaj -->
+    <div class="col-lg-7">
+        <div class="list-card h-100">
+            <div class="list-card-header">
+                <h6 class="mb-0 fw-bold"><i class="bi bi-envelope me-1"></i> Son Mesajlar</h6>
+                <a href="/Admin/Message/MessageList" class="small text-decoration-none">Tümünü gör →</a>
+            </div>
+
+            @if (!Model.LastMessages.Any())
+            {
+                <div class="empty-state py-4"><p class="text-secondary small mb-0">Henüz mesaj yok.</p></div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table list-table mb-0">
+                        <thead>
+                            <tr><th>Gönderen</th><th>Konu</th><th>Tarih</th><th>Durum</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var m in Model.LastMessages)
+                            {
+                                <tr class="@(m.IsRead ? "" : "fw-semibold")" style="cursor:pointer;" title="Detayı görüntüle"
+                                    onclick="location.href='/Admin/Message/MessageList?open=@m.MessageId'">
+                                    <td>@m.NameSurname</td>
+                                    <td>@m.Subject</td>
+                                    <td class="text-secondary fw-normal text-nowrap">@m.SendDate.ToString("dd.MM.yyyy")</td>
+                                    <td>
+                                        @if (m.IsRead)
+                                        {
+                                            <span class="badge bg-success">Okundu</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark">Okunmadı</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Kategori Dağılımı + Okunma Oranı -->
+    <div class="col-lg-5">
+        <div class="list-card h-100">
+            <div class="list-card-header">
+                <h6 class="mb-0 fw-bold"><i class="bi bi-bar-chart me-1"></i> Kategoriye Göre Projeler</h6>
+            </div>
+            <div class="p-4">
+                @if (!Model.CategoryStats.Any())
+                {
+                    <p class="text-secondary small mb-0">Henüz proje yok.</p>
+                }
+                else
+                {
+                    @* GroupBy sonucu: her kategori için yatay çubuk *@
+                    @foreach (var c in Model.CategoryStats)
+                    {
+                        var width = (int)Math.Round(c.ProjectCount * 100.0 / maxCategory);
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between small mb-1">
+                                <span class="fw-semibold">@c.CategoryName</span>
+                                <span class="text-secondary">@c.ProjectCount proje</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar" style="width: @width%; background-color: var(--primary-accent);"></div>
+                            </div>
+                        </div>
+                    }
+                }
+
+                <hr class="my-4" />
+
+                <!-- Mesaj okunma oranı -->
+                <div class="d-flex justify-content-between small mb-1">
+                    <span class="fw-semibold">Mesaj Okunma Oranı</span>
+                    <span class="text-secondary">@readCount / @Model.MessageCount okundu (%@readPercent)</span>
+                </div>
+                <div class="progress" style="height: 8px;">
+                    <div class="progress-bar bg-success" style="width: @readPercent%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Son 3 Proje -->
+<div class="list-card">
+    <div class="list-card-header">
+        <h6 class="mb-0 fw-bold"><i class="bi bi-grid me-1"></i> Son Eklenen Projeler</h6>
+        <a href="/Admin/Project/ProjectList" class="small text-decoration-none">Tümünü gör →</a>
+    </div>
+    <div class="p-4">
+        @if (!Model.LastProjects.Any())
+        {
+            <p class="text-secondary small mb-0">Henüz proje yok.</p>
+        }
+        else
+        {
+            <div class="row g-3">
+                @foreach (var p in Model.LastProjects)
+                {
+                    <div class="col-md-4">
+                        <div class="border rounded-3 overflow-hidden h-100">
+                            <img src="@p.CoverImageUrl" alt="@p.Title" style="width:100%; aspect-ratio:16/9; object-fit:cover;" />
+                            <div class="p-3">
+                                <span class="badge rounded-pill text-bg-light border mb-2">@p.Category?.CategoryName</span>
+                                <div class="fw-semibold">@p.Title</div>
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                    @if (p.IsActive)
+                                    {
+                                        <span class="badge bg-success-subtle text-success">Aktif</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary-subtle text-secondary">Pasif</span>
+                                    }
+                                    <a href="/Admin/Project/UpdateProject/@p.ProjectId" class="small text-decoration-none">Düzenle →</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>

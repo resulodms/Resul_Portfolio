@@ -1,0 +1,73 @@
+﻿@model List<IGrouping<string, Skill>>
+@{
+    // Bilinen grup adlarına göre ikon, renk ve açıklama (tasarımdaki kartlar)
+    (string Icon, string Color, string? Desc) GroupStyle(string name, int index)
+    {
+        var n = name.ToLower();
+        if (n.Contains("backend"))
+            return ("bi-hdd-network", "bg-icon-purple", "Güvenli, modüler ve yüksek performanslı sunucu taraflı mimariler.");
+        if (n.Contains("frontend"))
+            return ("bi-browser-chrome", "bg-icon-blue", "Erişilebilir, duyarlı ve temiz kullanıcı arayüzleri.");
+        if (n.Contains("database") || n.Contains("veritaban"))
+            return ("bi-database", "bg-icon-mint", "İlişkisel modelleme, sorgu optimizasyonu ve veri bütünlüğü.");
+        if (n.Contains("tool") || n.Contains("araç"))
+            return ("bi-tools", "bg-icon-peach", "Sürüm kontrolü, geliştirme araçları ve çevik çalışma kültürü.");
+        if (n.Contains("architecture") || n.Contains("mimari"))
+            return ("bi-diagram-3", "bg-icon-purple", "Sürdürülebilir, test edilebilir ve endüstri standardı prensipler.");
+
+        // Tanınmayan grup: varsayılan ikon, sırayla dönen renk, açıklama yok
+        var colors = new[] { "bg-icon-purple", "bg-icon-blue", "bg-icon-mint", "bg-icon-peach" };
+        return ("bi-stars", colors[index % colors.Length], null);
+    }
+}
+
+<!-- Technical Skills Section -->
+<section id="skills" style="background-color: var(--bg-secondary);">
+    <div class="container">
+        <div class="text-center mb-5 reveal-on-scroll">
+            <span class="section-eyebrow">TEKNİK YETKİNLİKLER</span>
+            <h2 class="section-title">Yeteneklerim</h2>
+            <p class="section-subtitle">Fikirleri çalışan yazılımlara dönüştürürken kullandığım teknolojiler.</p>
+        </div>
+
+        <div class="row g-4">
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                var group = Model[i];
+                var style = GroupStyle(group.Key, i);
+
+                <div class="col-lg-4 col-md-6 reveal-on-scroll">
+                    <div class="skill-group-card">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="float-icon-box @style.Color">
+                                <i class="bi @style.Icon"></i>
+                            </div>
+                            <h4 class="fs-5 fw-bold mb-0">@group.Key</h4>
+                        </div>
+
+                        @if (style.Desc != null)
+                        {
+                            <p class="text-secondary small mb-3">@style.Desc</p>
+                        }
+
+                        @* Grubun içindeki yetenekler: isim + yüzde + progress bar *@
+                        @foreach (var skill in group)
+                        {
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between small mb-1">
+                                    <span class="fw-semibold text-dark">@skill.Name</span>
+                                    <span class="text-secondary fw-medium">%@skill.Percentage</span>
+                                </div>
+                                <div class="progress" style="height: 6px; background-color: var(--bg-secondary);"
+                                     role="progressbar" aria-label="@skill.Name" aria-valuenow="@skill.Percentage" aria-valuemin="0" aria-valuemax="100">
+                                    <div class="progress-bar"
+                                         style="width: @skill.Percentage%; background: linear-gradient(90deg, var(--accent-purple), #A99CF0);"></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>

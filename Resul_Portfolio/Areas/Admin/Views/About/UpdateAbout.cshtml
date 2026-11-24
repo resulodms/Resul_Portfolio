@@ -1,0 +1,109 @@
+﻿@model About
+@{
+    ViewData["Title"] = "Hakkımda Güncelle";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+@* Form stilleri wwwroot/css/admin-forms.css dosyasından gelir (AdminLayout'ta link'li) *@
+
+<div class="form-card">
+    <form asp-area="Admin" asp-controller="About" asp-action="UpdateAbout" method="post">
+        @* EF hangi kaydı güncelleyeceğini bu Id'den anlar *@
+        <input type="hidden" asp-for="AboutId" />
+        <div class="form-card-header">
+            <div class="form-card-icon"><i class="bi bi-person-gear"></i></div>
+            <div>
+                <h5 class="mb-0 fw-bold">Hakkımda Bilgisini Güncelle</h5>
+                <small class="text-secondary">Mevcut bilgileri düzenleyip kaydedin.</small>
+            </div>
+        </div>
+
+        <div class="form-card-body">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+
+            <div class="row g-4">
+
+                <!-- Ad Soyad -->
+                <div class="col-md-6">
+                    <label asp-for="NameSurname" class="form-label">Ad Soyad <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-person"></i>
+                        <input asp-for="NameSurname" class="form-control" placeholder="Örn: Resul Ödemiş" />
+                    </div>
+                    <span asp-validation-for="NameSurname"></span>
+                </div>
+
+                <!-- Meslek -->
+                <div class="col-md-6">
+                    <label asp-for="JobTitle" class="form-label">Meslek / Unvan <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-briefcase"></i>
+                        <input asp-for="JobTitle" class="form-control" placeholder="Örn: Yönetim Bilişim Sistemleri" />
+                    </div>
+                    <span asp-validation-for="JobTitle"></span>
+                </div>
+
+                <!-- Konum -->
+                <div class="col-md-6">
+                    <label asp-for="Location" class="form-label">Konum <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-geo-alt"></i>
+                        <input asp-for="Location" class="form-control" placeholder="Örn: İstanbul, Türkiye" />
+                    </div>
+                    <span asp-validation-for="Location"></span>
+                </div>
+
+                <!-- Uzmanlık -->
+                <div class="col-md-6">
+                    <label asp-for="Expert" class="form-label">Uzmanlık <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-layers"></i>
+                        <input asp-for="Expert" class="form-control" placeholder="Örn: .NET Backend &amp; Full Stack Web Development" />
+                    </div>
+                    <span asp-validation-for="Expert"></span>
+                </div>
+
+                <!-- E-posta -->
+                <div class="col-md-6">
+                    <label asp-for="Email" class="form-label">E-posta <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-envelope"></i>
+                        <input asp-for="Email" type="email" class="form-control" placeholder="Örn: ornek@mail.com" />
+                    </div>
+                    <span asp-validation-for="Email"></span>
+                </div>
+
+                <!-- Çalışma Durumu -->
+                <div class="col-md-6">
+                    <label asp-for="OpenToWork" class="form-label">Çalışma Durumu <span class="req">*</span></label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-check-circle"></i>
+                        <input asp-for="OpenToWork" class="form-control" placeholder="Örn: Yeni projelere ve iş birliklerine açık" />
+                    </div>
+                    <span asp-validation-for="OpenToWork"></span>
+                </div>
+
+                <!-- Açıklama -->
+                <div class="col-12">
+                    <label asp-for="Description" class="form-label">Açıklama / Biyografi <span class="req">*</span></label>
+                    <textarea asp-for="Description" class="form-control" rows="6"
+                              placeholder="Kendinizi, ilgi alanlarınızı ve çalışma yaklaşımınızı anlatın..."></textarea>
+                    <span asp-validation-for="Description"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-card-footer">
+            <a asp-area="Admin" asp-controller="About" asp-action="AboutList" class="btn btn-soft">
+                <i class="bi bi-arrow-left me-1"></i> Vazgeç
+            </a>
+            <button type="submit" class="btn btn-accent">
+                <i class="bi bi-check2-circle me-1"></i> Değişiklikleri Kaydet
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

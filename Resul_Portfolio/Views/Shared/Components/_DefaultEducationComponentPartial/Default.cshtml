@@ -1,0 +1,82 @@
+﻿@model List<Education>
+@{
+    // Kartlara sırayla verilecek renkler ve zaman çizelgesi ikonları (tasarımdaki gibi döngüsel)
+    var badgeColors = new[] { "bg-icon-purple", "bg-icon-mint", "bg-icon-blue" };
+    var markerIcons = new[] { "bi-mortarboard", "bi-book", "bi-award" };
+}
+
+<!-- Education Section -->
+<section id="education" style="background-color: var(--bg-secondary);">
+    <div class="container">
+        <div class="text-center mb-5 reveal-on-scroll">
+            <span class="section-eyebrow">AKADEMİK YOLCULUĞUM</span>
+            <h2 class="section-title">Eğitim Hayatım</h2>
+            <p class="section-subtitle">Yazılım dünyasına uzanan yolculuğumun akademik temelleri.</p>
+        </div>
+
+        <div class="timeline-container">
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                var item = Model[i];
+                var isLeft = i % 2 == 0;                       // çift sıradakiler solda, tekler sağda (zigzag)
+                var badgeColor = badgeColors[i % badgeColors.Length];
+                var markerIcon = markerIcons[i % markerIcons.Length];
+
+                // Etiketler: virgülle ayrılmış
+                var tags = string.IsNullOrWhiteSpace(item.Tags)
+                ? Array.Empty<string>()
+                : item.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+                <div class="timeline-item row align-items-center g-4 reveal-on-scroll">
+
+                    @if (!isLeft)
+                    {
+                        <!-- Sol: konum (sadece masaüstü) -->
+                        <div class="col-lg-6 timeline-left d-none d-lg-block">
+                            <div class="text-secondary small fst-italic">@item.Location</div>
+                        </div>
+                        <div class="timeline-marker">
+                            <i class="bi @markerIcon"></i>
+                        </div>
+                    }
+
+                    <!-- Eğitim kartı -->
+                    <div class="col-lg-6 @(isLeft ? "timeline-left order-2 order-lg-1" : "timeline-right")">
+                        <div class="timeline-content-card">
+                            <span class="badge-year @badgeColor mb-2">
+                                <i class="bi bi-calendar3"></i> @item.Duration
+                            </span>
+                            <h4 class="fs-5 fw-bold mb-1">@item.Title</h4>
+                            @if (!string.IsNullOrEmpty(item.SubTitle))
+                            {
+                                <div class="text-primary fw-semibold small mb-2">@item.SubTitle</div>
+                            }
+                            <p class="text-secondary small mb-3">@item.Description</p>
+
+                            @if (tags.Any())
+                            {
+                                <div>
+                                    @foreach (var tag in tags)
+                                    {
+                                        <span class="tech-tag">@tag</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    @if (isLeft)
+                    {
+                        <div class="timeline-marker">
+                            <i class="bi @markerIcon"></i>
+                        </div>
+                        <!-- Sağ: konum (sadece masaüstü) -->
+                        <div class="col-lg-6 timeline-right order-1 order-lg-2 d-none d-lg-block">
+                            <div class="text-secondary small fst-italic">@item.Location</div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</section>

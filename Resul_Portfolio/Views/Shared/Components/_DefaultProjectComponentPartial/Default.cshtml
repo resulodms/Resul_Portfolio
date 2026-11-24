@@ -1,0 +1,89 @@
+﻿@model List<Project>
+@{
+    // Filtre butonları: sadece aktif projesi olan kategoriler, proje sayısıyla birlikte
+    var filterCategories = Model
+        .GroupBy(x => new { x.CategoryId, Name = x.Category?.CategoryName ?? "Diğer" })
+        .Select(g => new { g.Key.CategoryId, g.Key.Name, Count = g.Count() })
+        .OrderBy(x => x.Name)
+        .ToList();
+}
+
+<!-- Portfolio Projects Section -->
+<section id="projects">
+    <div class="container">
+        <div class="text-center mb-4 reveal-on-scroll">
+            <span class="section-eyebrow">SEÇİLMİŞ ÇALIŞMALAR</span>
+            <h2 class="section-title">Projelerim</h2>
+            <p class="section-subtitle">Öğrendiklerimi gerçek ürünlere dönüştürdüğüm çalışmalar.</p>
+        </div>
+
+        <!-- Kategori Filtreleri (dinamik) -->
+        <div class="d-flex justify-content-center flex-wrap gap-2 mb-5 reveal-on-scroll" id="projectFilterGroup">
+            <button class="filter-btn active" data-filter="all">Tümü (@Model.Count)</button>
+            @foreach (var cat in filterCategories)
+            {
+                <button class="filter-btn" data-filter="cat-@cat.CategoryId">@cat.Name (@cat.Count)</button>
+            }
+        </div>
+
+        <!-- Proje Kartları -->
+        <div class="row g-4" id="projectGrid">
+            @foreach (var item in Model)
+            {
+                var tags = string.IsNullOrWhiteSpace(item.Tags)
+                ? Array.Empty<string>()
+                : item.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+                @* data-category, filtre butonunun data-filter değeriyle eşleşir *@
+                <div class="col-lg-4 col-md-6 project-item" data-category="cat-@item.CategoryId">
+                    <div class="project-card reveal-on-scroll">
+
+                        <!-- Kapak Görseli -->
+                        <div class="project-thumb" style="width:100%; aspect-ratio:16/9; overflow:hidden;">
+                            <img src="@item.CoverImageUrl" alt="@item.Title" loading="lazy"
+                                 style="width:100%; height:100%; object-fit:cover; display:block;" />
+                        </div>
+
+                        <!-- İçerik -->
+                        <div class="project-body">
+                            <span class="project-category-badge">@item.Category?.CategoryName</span>
+
+                            <h3 class="project-title">@item.Title</h3>
+                            <p class="project-desc">@item.Description</p>
+
+                            @if (tags.Any())
+                            {
+                                <div class="mb-3">
+                                    @foreach (var tag in tags)
+                                    {
+                                        <span class="tech-tag">@tag</span>
+                                    }
+                                </div>
+                            }
+
+                            <!-- Bağlantılar: sadece girilmiş olanlar görünür -->
+                            @if (!string.IsNullOrEmpty(item.GithubUrl) || !string.IsNullOrEmpty(item.LiveDemoUrl))
+                            {
+                                <div class="project-footer">
+                                    @if (!string.IsNullOrEmpty(item.GithubUrl))
+                                    {
+                                        <a href="@item.GithubUrl" target="_blank" rel="noopener noreferrer" class="project-link-btn">
+                                            <i class="bi bi-github"></i> GitHub
+                                        </a>
+                                    }
+                                    @if (!string.IsNullOrEmpty(item.LiveDemoUrl))
+                                    {
+                                        <a href="@item.LiveDemoUrl" target="_blank" rel="noopener noreferrer" class="project-link-btn text-primary">
+                                            <i class="bi bi-box-arrow-up-right"></i> Canlı Demo
+                                        </a>
+                                    }
+                                </div>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>

@@ -1,0 +1,114 @@
+﻿@model List<HeroSection>
+@{
+    ViewData["Title"] = "Ana Sayfa";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+@* Stiller wwwroot/css/admin-forms.css dosyasından gelir *@
+
+<div class="list-card">
+    <!-- Başlık -->
+    <div class="list-card-header">
+        <div class="d-flex align-items-center gap-3">
+            <div class="list-card-icon"><i class="bi bi-house"></i></div>
+            <div>
+                <h5 class="mb-0 fw-bold">Ana Sayfa (Hero)</h5>
+                <small class="text-secondary">Portfolyonun en üstünde görünen karşılama alanı.</small>
+            </div>
+        </div>
+
+        @* Hero tek kayıtlık içerik: kayıt yoksa ekleme butonu görünür *@
+        @if (!Model.Any())
+        {
+            <a asp-area="Admin" asp-controller="HeroSection" asp-action="CreateHeroSection" class="btn btn-add">
+                <i class="bi bi-plus-lg me-1"></i> Yeni Ekle
+            </a>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <!-- Boş liste durumu -->
+        <div class="empty-state">
+            <div class="empty-icon"><i class="bi bi-house-add"></i></div>
+            <h6 class="fw-bold mb-1">Henüz ana sayfa bilgisi eklenmedi</h6>
+            <p class="text-secondary small mb-3">Bilgi eklenene kadar portfolyoda karşılama alanı görünmez.</p>
+            <a asp-area="Admin" asp-controller="HeroSection" asp-action="CreateHeroSection" class="btn btn-add">
+                <i class="bi bi-plus-lg me-1"></i> Hemen Ekle
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table list-table">
+                <thead>
+                    <tr>
+                        <th>Görsel</th>
+                        <th>Karşılama</th>
+                        <th>Ad Soyad</th>
+                        <th>Tanıtım Metni</th>
+                        <th class="text-end">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        // Uzun tanıtım metnini tabloda kısaltarak göster
+                        var shortDesc = item.Description.Length > 60
+                        ? item.Description.Substring(0, 60) + "..."
+                        : item.Description;
+
+                        <tr>
+                            <td>
+                                <img src="@item.ImageUrl" alt="@item.SubTitle" class="thumb-preview" />
+                            </td>
+                            <td>@item.Title</td>
+                            <td class="fw-semibold">@item.SubTitle</td>
+                            <td class="text-secondary" title="@item.Description">@shortDesc</td>
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-2">
+                                    <a asp-area="Admin" asp-controller="HeroSection" asp-action="UpdateHeroSection" asp-route-id="@item.HeroSectionId"
+                                       class="btn-icon edit" title="Güncelle">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <button type="button" class="btn-icon delete btn-delete"
+                                            data-id="@item.HeroSectionId" title="Sil">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Silme öncesi SweetAlert2 onay penceresi
+        document.querySelectorAll(".btn-delete").forEach(btn => {
+            btn.addEventListener("click", function () {
+                const id = this.dataset.id;
+
+                Swal.fire({
+                    icon: "warning",
+                    title: "Emin misiniz?",
+                    text: "Ana sayfa bilgisi kalıcı olarak silinecek. Portfolyodaki karşılama alanı da kaybolacak.",
+                    showCancelButton: true,
+                    confirmButtonText: "Evet, sil",
+                    cancelButtonText: "Vazgeç",
+                    confirmButtonColor: "#D9534F",
+                    cancelButtonColor: "#8490A5",
+                    reverseButtons: true
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        window.location.href = "/Admin/HeroSection/DeleteHeroSection/" + id;
+                    }
+                });
+            });
+        });
+    </script>
+}
